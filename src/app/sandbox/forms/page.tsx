@@ -6,6 +6,7 @@ import {
   Divider,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Input,
   Stack,
@@ -13,8 +14,26 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  age: z
+    .number({ invalid_type_error: "Age is required" })
+    .min(18, { message: "You must be at least 18 years old" }),
+});
+
+type FormData = z.infer<typeof schema>;
+
 const Page = () => {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
   const onSubmit = (data: FieldValues) => console.log(data);
   return (
@@ -50,6 +69,15 @@ const Page = () => {
               <FormLabel variant="inline">Name</FormLabel>
               <Input maxW={{ md: "3xl" }} {...register("name")} />
             </Stack>
+            {errors.name && (
+              <FormHelperText
+                display="flex"
+                flexDirection="row-reverse"
+                color="red"
+              >
+                <>{errors.name.message}</>
+              </FormHelperText>
+            )}
           </FormControl>
           <FormControl id="age">
             <Stack
@@ -57,13 +85,28 @@ const Page = () => {
               spacing={{ base: "1.5", md: "8" }}
               justify="space-between"
             >
-              <FormLabel variant="inline">Mobile Number</FormLabel>
-              <Input type="number" maxW={{ md: "3xl" }} {...register("age")} />
+              <FormLabel variant="inline">Age</FormLabel>
+              <Input
+                type="number"
+                maxW={{ md: "3xl" }}
+                {...register("age", { valueAsNumber: true })}
+              />
             </Stack>
+            {errors.age && (
+              <FormHelperText
+                display="flex"
+                flexDirection="row-reverse"
+                color="red"
+              >
+                <>{errors.age.message}</>
+              </FormHelperText>
+            )}
           </FormControl>
 
           <Flex direction="row-reverse">
-            <Button type="submit">Save</Button>
+            <Button isDisabled={!isValid} type="submit">
+              Save
+            </Button>
           </Flex>
         </Stack>
       </Stack>

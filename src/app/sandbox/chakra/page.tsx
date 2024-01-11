@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Center,
+  Container,
   HStack,
   Stack,
   StackDivider,
@@ -60,7 +61,7 @@ const members = [
 
 const Page = () => {
   return (
-    <>
+    <Container>
       <Stack spacing={4} direction="row" align="center">
         <Button colorScheme="teal" size="xs">
           Button
@@ -117,7 +118,7 @@ const Page = () => {
           </Stack>
         </Box>
       </Center>
-    </>
+    </Container>
   );
 };
 export default Page;
