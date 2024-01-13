@@ -1,8 +1,9 @@
 import {
+  Button,
   Container,
-  Link,
+  Flex,
+  Link as ChakraLink,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -10,14 +11,21 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { prisma } from "../lib/prisma-client";
+import Link from "next/link";
+
+import { prisma } from "../../../prisma/prisma-client";
 
 const ProdutsPage = async () => {
-  //const products = prismaClient.product.findMany
-  const data = await prisma.product.findMany();
+  const products = await prisma.product.findMany();
+  console.log(products);
 
   return (
     <Container py={{ base: "4", md: "8" }}>
+      <Flex direction="row-reverse" mb={2}>
+        <Button size="xs">
+          <Link href="/products/create">Add Product</Link>
+        </Button>
+      </Flex>
       <TableContainer>
         <Table variant="simple">
           <Thead>
@@ -29,15 +37,17 @@ const ProdutsPage = async () => {
             </Tr>
           </Thead>
           <Tbody>
-            {data.map((product) => (
+            {products.map((product) => (
               <Tr key={product.id}>
                 <Td>{product.createdAt.toDateString()}</Td>
-                <Td>{product.name}</Td>
+                <Td>
+                  <Link href={`/products/${product.id}`}>{product.name}</Link>
+                </Td>
                 <Td>{product.price}</Td>
                 <Td isNumeric>
-                  <Link href={product.url} isExternal>
+                  <ChakraLink href={product.url} isExternal>
                     Visit
-                  </Link>
+                  </ChakraLink>
                 </Td>
               </Tr>
             ))}
